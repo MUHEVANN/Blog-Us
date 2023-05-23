@@ -19,7 +19,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/',[UserController::class,'index']);
+// Route::get('/',[UserController::class,'index']);
 Route::get('/posts/${id}', [UserController::class,'show'])->name('posts.show');
 Route::get('/dashboard', function () {
     return view('dashboard');
@@ -32,7 +32,7 @@ Route::resource('post', PostController::class);
 //     return view('Posts.edit', ['data'=>$data,'category'=>$category]);
 // });
 Route::get('category/${id}',[CategoryController::class,'show'])->name('category.show');
-
+Route::redirect("/","/post");
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
