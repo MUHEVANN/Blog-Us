@@ -16,7 +16,7 @@ return new class extends Migration
             $table->unsignedBigInteger('category_id');
             $table->string('title');
             $table->longText('content');
-            $table->integer('viwers');
+            $table->integer('viwers')->nullable();
             $table->string('foto');
             $table->timestamps();
             
