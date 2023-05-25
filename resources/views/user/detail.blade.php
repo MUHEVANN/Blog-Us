@@ -1,4 +1,4 @@
-{{-- @extends('layout.user')
+@extends('layout.user')
 @section('content')
     <div class="px-5 lg:px-[80px] w-full ">
         <p>{{ $data->viwers }}</p>
@@ -7,81 +7,113 @@
         </div>
         <h1 class="font-bold text-[18px] my-3">{{ $data->title }}</h1>
         <p>{!! $data->content !!}</p>
-    </div>
-
-    <form action="{{ url('comment') }}" method="post">
-        @csrf
-        <input type="hidden" name="post_id" value="{{ $data->id }}">
-        <label for="konten">comment</label>
-        <input type="text" name="konten">
-        <button type="submit">Submit</button>
-    </form>
-    @foreach ($comment as $item)
-        <li>
-            {{ $item->konten }}
-            <button class="edit-comment-icon" data-toggle="tooltip" title="Edit"
-                data-target="#edit-comment-modal-{{ $item->id }}">edit</button>
-
-            <!-- Modal Edit Komentar -->
-            <div id="edit-comment-modal-{{ $item->id }}"
-                class="fixed inset-0 flex items-center justify-center z-50 hidden">
-                <div class="bg-white p-6 rounded shadow-md">
-                    <h2 class="text-lg font-bold mb-4">Edit Komentar</h2>
-                    <form id="edit-comment-form" action="" method="post">
-                        @csrf
-                        @method('PUT')
-                        <input type="text" name="konten" id="konten"
-                            class="w-full border border-gray-300 rounded px-4 py-2 mb-4" value="{{ $item->konten }}">
-                        <div class="flex justify-end">
-                            <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Simpan</button>
-                        </div>
-                    </form>
-                </div>
+        <article>
+            {!! $data->content !!}
+        </article>
+        <form action="{{ url('comment') }}" method="post" class="flex flex-col xl:w-[50%]">
+            @csrf
+            <input type="hidden" name="post_id" value="{{ $data->id }}">
+            <label for="konten" class="font-bold text-[36px]">comment</label>
+            {{-- <input type="textarea" name="konten"> --}}
+            <textarea name="konten" cols="30" rows="10" class="bg-slate-900 rounded-lg resize-none border-0 outline-none focus:outline-sky-600 my-2"></textarea>
+            <button type="submit" class="px-4 py-2 bg-sky-700 text-white rounded-lg flex-none w-36 mt-2 focus:ring focus:outline-sky-400 focus:ring-sky-400 focus:ring-offset-1">Submit</button>
+        </form>
+        <div class="flex flex-col xl:w-[50%] bg-slate-900 my-6 px-6 pt-2 pb-4 rounded-lg">
+            @foreach ($comment as $item)
+            {{-- <div class="flex flex-row justify-between mt-4">
+                <p class="text-medium text-lg">Nama orang komen</p>
+                <p class="flex-none">{{ $item->created_at }}</p>
             </div>
-        </li>
-    @endforeach
-    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
-        Launch demo modal
-    </button>
+            <p>{{ $item->konten }}</p>
+            <hr class="border-1 border-sky-800/60 my-3"> --}}
+            <div class="flex flex-row justify-between mt-4">
+                <p class="text-medium text-lg">Nama orang komen</p>
+                <p class="flex-none">{{ $item->created_at }}</p>
+            </div>
+            <p>{{ $item->konten }}</p>
+            <hr class="border-1 border-sky-800/60 my-3">
+            <button @click="toggleEdit">Edit</button>
+            <textarea x-show="isEditing" x-model="konten" @blur="save"></textarea>
+            
+            <script>
+            function data() {
+              return {
+                isEditing: false,
+                konten: $item->konten,
+              };
+            }
+            </script>
+            
+        @endforeach
 
-    <!-- Modal -->
-    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        @foreach ($comment as $item)
+            <li>
+                {{ $item->konten }}
+                <button class="edit-comment-icon" data-toggle="tooltip" title="Edit"
+                    data-target="#edit-comment-modal-{{ $item->id }}">edit</button>
+    
+                <!-- Modal Edit Komentar -->
+                <div id="edit-comment-modal-{{ $item->id }}"
+                    class="fixed inset-0 flex items-center justify-center z-50 hidden">
+                    <div class="bg-white p-6 rounded shadow-md">
+                        <h2 class="text-lg font-bold mb-4">Edit Komentar</h2>
+                        <form id="edit-comment-form" action="" method="post">
+                            @csrf
+                            @method('PUT')
+                            <input type="text" name="konten" id="konten"
+                                class="w-full border border-gray-300 rounded px-4 py-2 mb-4" value="{{ $item->konten }}">
+                            <div class="flex justify-end">
+                                <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Simpan</button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
-                <div class="modal-body">
-                    ...
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary">Save changes</button>
+            </li>
+        @endforeach
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+            Launch demo modal
+        </button>
+    
+        <!-- Modal -->
+        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        ...
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary">Save changes</button>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-    <script>
-        // Fungsi untuk menangani klik pada ikon edit komentar
-        document.querySelectorAll('.edit-comment-icon').forEach(function(icon) {
-            icon.addEventListener('click', function() {
-                var modal = document.getElementById('edit-comment-modal');
-
-                // Tampilkan modal
-                modal.classList.remove('hidden');
+        <script>
+            // Fungsi untuk menangani klik pada ikon edit komentar
+            document.querySelectorAll('.edit-comment-icon').forEach(function(icon) {
+                icon.addEventListener('click', function() {
+                    var modal = document.getElementById('edit-comment-modal');
+    
+                    // Tampilkan modal
+                    modal.classList.remove('hidden');
+                });
             });
-        });
-
-        // Fungsi untuk menyembunyikan modal saat tombol "Tutup" ditekan
-        document.getElementById('edit-comment-modal').addEventListener('click', function(event) {
-            if (event.target === this) {
-                this.classList.add('hidden');
-            }
-        });
-    </script>
-@endsection --}}
-<!DOCTYPE html>
+    
+            // Fungsi untuk menyembunyikan modal saat tombol "Tutup" ditekan
+            document.getElementById('edit-comment-modal').addEventListener('click', function(event) {
+                if (event.target === this) {
+                    this.classList.add('hidden');
+                }
+            }); 
+        </script>
+    </div>
+@endsection
+{{-- <!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -152,4 +184,4 @@
     </script>
 </body>
 
-</html>
+</html> --}}
