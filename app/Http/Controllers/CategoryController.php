@@ -14,7 +14,8 @@ class CategoryController extends Controller
      */
     public function index()
     {
-        //
+        $data = Category::all();
+        return view('Category.index',['data' =>$data]);
     }
 
     /**
@@ -22,7 +23,7 @@ class CategoryController extends Controller
      */
     public function create()
     {
-        //
+        return view('Category.create');
     }
 
     /**
@@ -30,7 +31,10 @@ class CategoryController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate(["name"=>"required"],["name.required"=>"form harus diisi"]);
+        $data = ["name" => $request->name ];
+        Category::create($data);
+        return redirect()->to('category');
     }
 
     /**
@@ -54,7 +58,8 @@ class CategoryController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $data = Category::find($id);
+        return view('Category.edit',['data'=>$data]);
     }
 
     /**
@@ -62,7 +67,10 @@ class CategoryController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $request->validate(["name"=>"required"],["name.required"=>"form harus diisi"]);
+        $data = ["name" => $request->name ];
+        Category::where('id',$id)->update($data);
+        return redirect()->to('category');
     }
 
     /**
@@ -70,6 +78,7 @@ class CategoryController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        Category::where('id', $id)->delete();
+        return redirect()->to('category');
     }
 }

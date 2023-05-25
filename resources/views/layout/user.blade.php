@@ -80,7 +80,7 @@
             <li class="p-3 hover:bg-slate-300 rounded"><a href="{{ url('/') }}">Home</a></li>
             @foreach ($category as $item)
                 <li class="p-3 hover:bg-slate-300 rounded ">
-                    <a href="{{ route('category.show', ['id' => $item->id]) }}">{{ $item->name }}</a>
+                    <a href="{{ route('category.show', $item->id) }}">{{ $item->name }}</a>
                 </li>
             @endforeach
         </ul>

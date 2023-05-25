@@ -2,23 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Category;
-use App\Models\Post;
+use App\Models\Comment;
 use Illuminate\Http\Request;
 
-class UserController extends Controller
+class CommentController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $pupular = Post::orderBy('viwers','desc')->take(5)->get();
-        $category = Category::all();
-        $post = Post::latest()->take(6)->get();
-        // $text = $post->content;
-        // $sub = substr($text, 0,50);
-        return view('welcome',['post'=>$post,'category'=>$category,'popular'=>$pupular]);
+        //
     }
 
     /**
@@ -34,7 +28,13 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate(['konten'=>'required'],['konten.required'=>'harus diisi']);
+        $data = [
+            "konten"=>$request->konten,
+            "post_id"=>$request->post_id
+        ];
+        Comment::create($data);
+        return back();
     }
 
     /**
@@ -42,12 +42,7 @@ class UserController extends Controller
      */
     public function show(string $id)
     {
-        $category = Category::all();
-        $post = Post::findOrFail($id);
-        $post->viwers++;
-        $post->save();
-        $comment = $post->comment;
-        return view('user.detail',['data'=>$post,'category'=>$category,'comment'=>$comment]);
+        //
     }
 
     /**
@@ -63,7 +58,9 @@ class UserController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $data = ["konten" => $request->konten ];
+        Comment::where('id', $id)->update($data);
+        return redirect()->back();
     }
 
     /**
@@ -71,6 +68,7 @@ class UserController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        Comment::where('id', $id)->delete();
+        return redirect()->back();
     }
 }
