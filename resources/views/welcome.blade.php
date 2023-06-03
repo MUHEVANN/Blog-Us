@@ -1,6 +1,8 @@
-@extends('layout.user')
+@extends('layout.home')
 @section('content')
     <div class="w-full px-5 lg:px-[80px]">
+
+
         <div class="flex  bg-[#E9F4F5] px-[30px] py-[30px] md:py-[60px]">
 
             <div class="flex-1 flex flex-col lg:gap-0 md:gap-3 gap-y-5 justify-between">

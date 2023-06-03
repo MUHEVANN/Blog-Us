@@ -4,7 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use App\Models\Post;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
@@ -13,12 +16,8 @@ class UserController extends Controller
      */
     public function index()
     {
-        $pupular = Post::orderBy('viwers','desc')->take(5)->get();
-        $category = Category::all();
-        $post = Post::latest()->take(6)->get();
-        // $text = $post->content;
-        // $sub = substr($text, 0,50);
-        return view('welcome',['post'=>$post,'category'=>$category,'popular'=>$pupular]);
+        $userRoles = User::whereHasRole('user')->get();
+        return view('Users.user',compact('userRoles'));
     }
 
     /**
@@ -26,7 +25,7 @@ class UserController extends Controller
      */
     public function create()
     {
-        //
+        return view('Users.create');
     }
 
     /**
@@ -34,7 +33,22 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+        'email' => 'required', 
+        'password' => 'required',
+        'name'=>'required'
+        ],[
+        'email.required'=>'Field tidak boleh kosong',
+        'password.required'=>'Field tidak boleh kosong',
+        'name.required'=>'Field tidak boleh kosong'
+    ]);
+    $user = User::create([
+        'name' => $request->name,
+        'email' => $request->email,
+        'password' => Hash::make($request->password),
+    ]);
+    $user->addRole('user');
+    return redirect()->intended('users');
     }
 
     /**
@@ -42,12 +56,7 @@ class UserController extends Controller
      */
     public function show(string $id)
     {
-        $category = Category::all();
-        $post = Post::findOrFail($id);
-        $post->viwers++;
-        $post->save();
-        $comment = $post->comment;
-        return view('user.detail',['data'=>$post,'category'=>$category,'comment'=>$comment]);
+        
     }
 
     /**
@@ -55,7 +64,8 @@ class UserController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $data = User::where('id',$id)->first();
+        return view('Users.edit',compact('data'));
     }
 
     /**
@@ -63,7 +73,24 @@ class UserController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $request->validate([
+            'name' => 'required',
+            'email' => 'required|email',
+            'new_password' => 'nullable|min:6',
+        ]);
+    
+        $data = [
+            'name' => $request->name,
+            'email' => $request->email,
+        ];
+    
+        if ($request->filled('new_password')) {
+            $data['password'] = bcrypt($request->input('new_password'));
+        }
+    
+        User::where('id', $id)->update($data);
+    
+        return redirect()->intended('users');
     }
 
     /**
@@ -71,6 +98,7 @@ class UserController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        User::where('id',$id)->delete($id);
+        return redirect()->back();
     }
 }

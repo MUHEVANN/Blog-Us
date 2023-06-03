@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use App\Models\Post;
+use App\Models\Tag;
+use App\Models\Tags;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
@@ -59,6 +61,8 @@ class PostController extends Controller
         ];
 
         Post::create($data);
+       
+
         return redirect()->to('post');
     }
 
@@ -114,8 +118,8 @@ class PostController extends Controller
             ];
         }
 
-        Post::where('id',$id)->update($data);
-        return redirect()->to('post');
+       Post::where('id',$id)->update($data);
+  return redirect()->to('post');
     }
 
     /**

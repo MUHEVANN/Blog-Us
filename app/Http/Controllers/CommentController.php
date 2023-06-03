@@ -58,7 +58,7 @@ class CommentController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $data = ["konten" => $request->konten ];
+        $data = ["konten" => $request->updatekomen ];
         Comment::where('id', $id)->update($data);
         return redirect()->back();
     }
