@@ -14,7 +14,9 @@ class Post extends Model
         'content',
         'foto',
         'category_id',
-        'viwers'
+        'viwers',
+      
+        
     ];
     public function category(){
         return $this->belongsTo(Category::class, 'category_id');

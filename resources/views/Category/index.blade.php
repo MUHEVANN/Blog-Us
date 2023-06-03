@@ -1,8 +1,19 @@
 @extends('layout.main')
 @section('content')
+    <table class="table table-sm">
+        <caption>List of users</caption>
+        <thead>
+            <tr>
+                <th>no</th>
+            </tr>
+        </thead>
+        <tbody>
+            ...
+        </tbody>
+    </table>
     <h1>halaman post content</h1>
 
-    <table class="table w-full">
+    {{-- <table class="table w-full">
         <!-- head -->
         <thead class="">
             <tr>
@@ -33,9 +44,7 @@
                                 </svg>
                             </a>
 
-                            {{-- <label for="my-modal" class="btn">open modal</label> --}}
-
-                            <!-- Put this part before </body> tag -->
+                           
 
                             <form action="{{ url('category/' . $item->id) }}" method="POST">
                                 @csrf
@@ -54,5 +63,5 @@
                 </tr>
             @endforeach
         </tbody>
-    </table>
+    </table> --}}
 @endsection

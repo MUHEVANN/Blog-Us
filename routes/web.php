@@ -8,6 +8,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\HomeController;
 
 /*
 |--------------------------------------------------------------------------
@@ -19,14 +20,16 @@ use App\Http\Controllers\CategoryController;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
-
-Route::get('/',[UserController::class,'index']);
-Route::get('/posts/${id}', [UserController::class,'show'])->name('posts.show');
+Route::middleware(['auth', 'verified','role:admin'])->group(function () {
+    Route::resource('users', UserController::class);
+    Route::resource('post', PostController::class);
+});
+Route::get('/',[HomeController::class,'index'])->name('user.home');
+Route::get('/posts/${id}', [HomeController::class,'show'])->name('posts.show');
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
-Route::resource('post', PostController::class);
 // Route::get('all-post', function () {
 //     $category = Category::get();
 //     $data = Post::where('id',$id)->first();
