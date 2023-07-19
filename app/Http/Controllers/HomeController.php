@@ -13,18 +13,21 @@ class HomeController extends Controller
      */
     public function index(Request $request)
     {
+        
         $searchTerm = $request->query('search');
         if($searchTerm){
-            $post = Post::where('title', 'LIKE', "%{$searchTerm}%")->get();
+            $post = Post::where('title', 'LIKE', "%".$searchTerm."%")->get();
+            // ->withCount('comment')
         }else{
 
-            $post = Post::latest()->take(6)->get();
+            $post = Post::paginate(4);
         }
+        
         $pupular = Post::orderBy('viwers','desc')->take(5)->get();
         $category = Category::all();
         // $text = $post->content;
         // $sub = substr($text, 0,50);
-        return view('welcome',['post'=>$post,'category'=>$category,'popular'=>$pupular]);
+        return view('welcome',['post'=>$post,'category'=>$category,'popular'=>$pupular,'searchTerm'=>$searchTerm]);
     }
 
     /**
@@ -50,10 +53,11 @@ class HomeController extends Controller
     {
         $category = Category::all();
         $post = Post::findOrFail($id);
+        $comment = $post->comment;
+        $commentCount = $post->comment->count();
         $post->viwers++;
         $post->save();
-        $comment = $post->comment;
-        return view('user.detail',['data'=>$post,'category'=>$category,'comment'=>$comment]);
+        return view('Users.detail',['data'=>$post,'category'=>$category,'comments'=>$comment,'commentCount'=>$commentCount]);
     }
 
     /**

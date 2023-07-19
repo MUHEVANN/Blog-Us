@@ -1,15 +1,17 @@
 @extends('layout.main')
 @section('content')
-    <form action="{{ url('category') }}" method="post" class="w-[500px]">
-        @csrf
-        <form-group class="flex flex-col gap-3">
-            <label for="name">Nama kategory</label>
-            <input name="name" type="text" class="rounded " class="mb-6">
-            <div>
-
-                <button type="submit"
-                    class="bg-sky-600 px-6 py-2 rounded hover:bg-sky-700 text-white transition-all">Submit</button>
-            </div>
-        </form-group>
-    </form>
+    halaman category
+    <div class="card">
+        <div class="card-body">
+            <form action="{{ url('category') }}" method="POST">
+                @csrf
+                <div class="mb-3">
+                    <label for="exampleInputText" class="form-label">Nama Category</label>
+                    <input type="text" name="name" class="form-control" id="exampleInputText"
+                        aria-describedby="emailHelp">
+                </div>
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </form>
+        </div>
+    </div>
 @endsection

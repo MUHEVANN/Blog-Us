@@ -1,3 +1,33 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+.navbar-active {
+    background-color: blue;
+    color: white;
+}
+
+.search {
+    top: 7px;
+    right: 20px;
+}
+.search:focus {
+    display: none;
+}
+.list-a {
+    color: black; /* Warna teks asli */
+    transition: transform 0.2s ease-in-out; /* Transisi warna selama 0.5 detik */
+}
+.list-a:hover {
+    transform: translateX(10px);
+}
+.img {
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+}
+.tgl {
+    font-size: 12px;
+}
+.top {
+    min-width: 6%;
+}

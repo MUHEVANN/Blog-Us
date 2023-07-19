@@ -48,7 +48,7 @@ class UserController extends Controller
         'password' => Hash::make($request->password),
     ]);
     $user->addRole('user');
-    return redirect()->intended('users');
+    return redirect()->intended('users')->with('success',"berhasil ditambah");
     }
 
     /**
@@ -90,7 +90,7 @@ class UserController extends Controller
     
         User::where('id', $id)->update($data);
     
-        return redirect()->intended('users');
+        return redirect()->intended('users')->with('success','berhasil diedit');
     }
 
     /**
@@ -99,6 +99,6 @@ class UserController extends Controller
     public function destroy(string $id)
     {
         User::where('id',$id)->delete($id);
-        return redirect()->back();
+        return redirect()->back()->with('success','berhasil dihapus');
     }
 }

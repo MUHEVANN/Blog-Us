@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use App\Models\Post;
+use Illuminate\Console\View\Components\Alert;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 
 class CategoryController extends Controller
 {
@@ -31,10 +33,19 @@ class CategoryController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate(["name"=>"required"],["name.required"=>"form harus diisi"]);
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|unique:categories',
+        ]);
+    
+        if ($validator->fails()) {
+            $errors = $validator->errors();
+    
+            // Menampilkan pesan kesalahan
+            return redirect()->back()->withErrors($errors);
+        }
         $data = ["name" => $request->name ];
         Category::create($data);
-        return redirect()->to('category');
+        return redirect()->to('category')->with('success',"berhasil ditambah");
     }
 
     /**
@@ -50,7 +61,7 @@ class CategoryController extends Controller
         ->where('categories.id',$category_id->id)
         ->get();
         $popular = Post::where('category_id',$category_id->id)->orderBy('viwers', 'desc')->take(6)->get();
-        return view('user.category',['category_id'=>$category_id,'data'=>$data,'category'=>$category,'popular'=>$popular]);
+        return view('Users.category',['category_id'=>$category_id,'data'=>$data,'category'=>$category,'popular'=>$popular]);
     }
 
     /**
@@ -70,7 +81,7 @@ class CategoryController extends Controller
         $request->validate(["name"=>"required"],["name.required"=>"form harus diisi"]);
         $data = ["name" => $request->name ];
         Category::where('id',$id)->update($data);
-        return redirect()->to('category');
+        return redirect()->to('category')->with('success','berhasil diedit');
     }
 
     /**
@@ -79,6 +90,6 @@ class CategoryController extends Controller
     public function destroy(string $id)
     {
         Category::where('id', $id)->delete();
-        return redirect()->to('category');
+        return redirect()->to('category')->with('success', 'berhasil dihapus');
     }
 }

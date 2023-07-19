@@ -14,11 +14,10 @@
                 </div>
                 <div class="mb-3">
                     <label for="exampleInputText" class="form-label">Category</label>
-                    <select class="form-select" value="{{ $data->category->name }}" name="category_id"
-                        aria-label="Default select example">
-                        <option selected>Open this select menu</option>
+                    <select class="form-select" name="category_id" aria-label="Default select example">
                         @foreach ($category as $item)
-                            <option value="{{ $item->id }}">{{ $item->name }}</option>
+                            <option value="{{ $item->id }}"
+                                {{ $item->name === $data->category->name ? 'selected' : '' }}>{{ $item->name }}</option>
                         @endforeach
 
                     </select>

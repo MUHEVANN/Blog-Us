@@ -1,63 +1,252 @@
 @extends('layout.home')
 @section('content')
-    <div class="px-5 lg:px-[80px] w-full ">
+    <div class="px-5 lg:px-[300px] w-full ">
+
         <p>{{ $data->viwers }}</p>
         <div class="w-[100%] h-[500px]">
             <img src="{{ asset('foto/' . $data->foto) }}" alt="" class="w-full h-full object-cover" />
         </div>
         <h1 class="font-bold text-[18px] my-3">{{ $data->title }}</h1>
-        <p>{!! $data->content !!}</p>
+        <div class="prose lg:prose-xl">
 
-        <form action="{{ url('comment') }}" method="post" class="flex flex-col xl:w-[50%]">
-            @csrf
-            <input type="hidden" name="post_id" value="{{ $data->id }}">
-            <label for="konten" class="font-bold text-[36px]">comment</label>
-            {{-- <input type="textarea" name="konten"> --}}
-            <textarea name="konten" cols="30" rows="10"
-                class="bg-slate-900 rounded-lg resize-none border-0 outline-none focus:outline-sky-600 my-2"></textarea>
-            <button type="submit"
-                class="px-4 py-2 bg-sky-700 text-white rounded-lg flex-none w-36 mt-2 focus:ring focus:outline-sky-400 focus:ring-sky-400 focus:ring-offset-1">Submit</button>
-        </form>
-        <div class="flex flex-col xl:w-[50%] bg-slate-900 my-6 px-6 pt-2 pb-4 rounded-lg">
-            @foreach ($comment as $item)
-                <div class="flex flex-row justify-between mt-4">
-                    <p class="text-medium text-lg">Nama orang komen</p>
-                    <p class="flex-none">{{ $item->created_at }}</p>
+            {!! $data->content !!}
+            </d>
+
+            <form action="{{ url('comment') }}" method="post" class="flex flex-col ">
+                @csrf
+                <input type="hidden" name="post_id" value="{{ $data->id }}">
+                @if (Auth::check())
+                    <input type="hidden" name="user_id" value="{{ Auth::user()->id }}">
+                @endif
+                <label for="konten" class="font-bold text-xl mt-5">comment</label>
+                {{-- <input type="textarea" name="konten"> --}}
+                <textarea name="konten" cols="30" rows="10" class="rounded-lg px-5 py-3 border focus:outline-sky-600 my-2"></textarea>
+                <div class="flex justify-end">
+                    @guest
+                        <button>
+
+                            <a href="/login"
+                                class="px-4 py-2 bg-sky-700 text-white rounded-lg flex-none w-36 mt-2 focus:ring focus:outline-sky-400 focus:ring-sky-400 focus:ring-offset-1">Submit</a>
+                        </button>
+                    @else
+                        <button type="submit"
+                            class="px-4 py-2 bg-sky-700 text-white rounded-lg flex-none w-36 mt-2 focus:ring focus:outline-sky-400 focus:ring-sky-400 focus:ring-offset-1">Submit</button>
+                    @endguest
                 </div>
-                <p>{{ $item->konten }}</p>
-                <hr class="border-1 border-sky-800/60 my-3">
-                <div x-data="{ open: false }" class="flex flex-col">
-                    <div class="flex justify-between">
-
-                        <button @click="open = true">Edit</button>
-                        <form action="{{ url('comment/' . $item->id) }}" method="post">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit">
-                                hapus
-                            </button>
-                        </form>
-                    </div>
-                    <form action="{{ url('comment/' . $item->id) }}" method="post">
-                        @csrf
-                        @method('PUT')
-                        <span x-show="open" x-trap="open" class="flex flex-col">
-                            <textarea name="updatekomen"
-                                class="bg-slate-900 rounded-lg resize-none border-0 outline-none focus:outline-sky-600 my-2">{{ $item->konten }}</textarea>
-                            <div class="flex flex-row gap-4">
-                                <button type="submit" class="bg-sky-600 text-white px-6 py-2 rounded-lg">Simpan</button>
-                                <a @click="open = false"
-                                    class="cursor-pointer bg-sky-900 text-white px-6 py-2 rounded-lg">Batal</a>
+            </form>
+            {{-- @if ($commentCount > 0)
+                <div class="flex flex-col border my-6 px-6 pt-2 pb-4 rounded-lg">
+                    @foreach ($comment as $item)
+                        @if ($comment->reply_comment === null)
+                            <div class="flex flex-row justify-between mt-4">
+                                <p class="text-medium text-sm">{{ $item->user->name }}</p>
+                                <p class="flex-none">{{ $item->created_at }}</p>
                             </div>
-                        </span>
-                    </form>
+                            <p>{{ $item->konten }}</p>
+                            <hr class="border-1 border-sky-800/60 my-3">
+                            @if (Auth::check() && Auth::user()->id != $item->user_id)
+                                <div x-data="{ open: false }">
+                                    <button @click="open = true">Balas</button>
+                                    <form action="{{ route('reply.show', ['id' => $item->id]) }}" method="post">
+                                        @csrf
+                                        <span x-show="open" x-trap="open" class="flex flex-col">
+                                            <textarea name="reply" class=" rounded-lg resize-none px-5 py-3  focus:outline-sky-600 my-2"></textarea>
+                                            <div class="flex flex-row gap-4">
+                                                <button type="submit"
+                                                    class="bg-sky-600 text-white px-6 py-2 rounded-lg">Simpan</button>
+                                                <a @click="open = false"
+                                                    class="cursor-pointer bg-sky-900 text-white px-6 py-2 rounded-lg">Batal</a>
+                                            </div>
+                                        </span>
+                                    </form>
+                                </div>
+                            @endif
+                            <div x-data="{ open: false }" class="flex flex-col">
+                                @if (Auth::check() && Auth::user()->id === $item->user_id)
+                                    <div class="flex justify-between">
+                                        <button @click="open = true">Edit</button>
+                                        <form action="{{ url('comment/' . $item->id) }}" method="post">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit">
+                                                hapus
+                                            </button>
+                                        </form>
+                                    </div>
+                                @endif
+                                <form action="{{ url('comment/' . $item->id) }}" method="post">
+                                    @csrf
+                                    @method('PUT')
+                                    <span x-show="open" x-trap="open" class="flex flex-col">
+                                        <textarea name="updatekomen" class=" rounded-lg resize-none px-5 py-3  focus:outline-sky-600 my-2">{{ $item->konten }}</textarea>
+                                        <div class="flex flex-row gap-4">
+                                            <button type="submit"
+                                                class="bg-sky-600 text-white px-6 py-2 rounded-lg">Simpan</button>
+                                            <a @click="open = false"
+                                                class="cursor-pointer bg-sky-900 text-white px-6 py-2 rounded-lg">Batal</a>
+                                        </div>
+                                    </span>
+                                </form>
+                            </div>
+                        @endif
+                    @endforeach
+
                 </div>
-            @endforeach
+            @endif --}}
+            {{-- @foreach ($comment->reply_comment as $reply)
+                        <p>{{ $reply->user->name }} replied:</p>
+                        <p>{{ $reply->reply }}</p>
+                    @endforeach --}}
 
-        </div>
+            <!-- Tampilkan komentar utama gpt-->
+            @if ($commentCount > 0)
+                <div class="flex flex-col gap-y-2 border my-6 px-6 pt-2 pb-4 rounded-lg ">
+                    @foreach ($comments as $comment)
+                        <div class="flex flex-col">
+                            @if ($comment->reply_comment === null)
+                                <div class="flex flex-row justify-between ">
+                                    <p class="text-medium text-[14px]">{{ $comment->user->name }}</p>
+                                    <p class="flex-none">{{ $comment->created_at }}</p>
+                                </div>
+                                <p>{{ $comment->konten }}</p>
+                                <hr class="border-1 border-sky-800/60 my-3">
+
+                                @if (Auth::check() && Auth::user()->id != $comment->user_id)
+                                    <!-- Form untuk balas komentar -->
+                                    <div x-data="{ open: false }">
+                                        <button @click="open = true">Balas</button>
+                                        <form action="{{ route('reply.show', ['id' => $comment->id]) }}" method="post">
+                                            @csrf
+                                            <span x-show="open" x-trap="open" class="flex flex-col">
+                                                <textarea name="reply" class="rounded-lg resize-none px-5 py-3 focus:outline-sky-600 my-2"></textarea>
+                                                <div class="flex flex-row gap-4">
+                                                    <button type="submit"
+                                                        class="bg-sky-600 text-white px-6 py-2 rounded-lg">Simpan</button>
+                                                    <a @click="open = false"
+                                                        class="cursor-pointer bg-sky-900 text-white px-6 py-2 rounded-lg">Batal</a>
+                                                </div>
+                                            </span>
+                                        </form>
+                                    </div>
+                                @else
+                                    <div class="flex mb-2">
+                                        <div x-data="{ open: false }" class="w-[100%]">
+                                            <button @click="open = true" class="text-blue-500">Edit</button>
+                                            <form action="{{ url('comment/' . $comment->id) }}" method="post">
+                                                @csrf
+                                                @method('PUT')
+                                                <span x-show="open" x-trap="open" class="flex flex-col">
+                                                    <textarea name="updatekomen" class=" rounded-lg resize-none px-5 py-3  focus:outline-sky-600 my-2">{{ $comment->konten }}</textarea>
+                                                    <div class="flex flex-row gap-4">
+                                                        <button type="submit"
+                                                            class="bg-sky-600 text-white px-6 py-2 rounded-lg">Simpan</button>
+                                                        <a @click="open = false"
+                                                            class="cursor-pointer bg-sky-900 text-white px-6 py-2 rounded-lg">Batal</a>
+                                                    </div>
+                                                </span>
+                                            </form>
+                                        </div>
+                                        <form action="{{ url('comment/' . $comment->id) }}" method="post">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="text-red-500">
+                                                hapus
+                                            </button>
+                                        </form>
+                                    </div>
+                                @endif
+                                <div x-data="{
+                                    open: false,
+                                }">
+                                    @if ($comment->replies->count() > 0)
+                                        <button @click="open = ! open" class="text-sm ">Lihat Balasan </button>
+                                        <div x-show="open">
+
+                                            <div class="pl-4 my-2">
+                                                @foreach ($comment->replies as $reply)
+                                                    <div class="flex justify-between">
+                                                        <button class="text-[14px]">{{ $reply->user->name }} >
+                                                            {{ $comment->user->name }}</button>
+
+                                                    </div>
+                                                    <p>{{ $reply->konten }}</p>
+                                                    <hr class="border-1 border-sky-800/60 my-3">
+                                                    @if (Auth::check() && Auth::user()->id === $reply->user_id)
+                                                        <div class="flex mb-2">
+                                                            <div x-data="{ open: false }" class="w-[100%]">
+                                                                <button @click="open = true"
+                                                                    class="text-blue-500">Edit</button>
+                                                                <form action="{{ url('comment/' . $reply->id) }}"
+                                                                    method="post">
+                                                                    @csrf
+                                                                    @method('PUT')
+                                                                    <span x-show="open" x-trap="open"
+                                                                        class="flex flex-col">
+                                                                        <textarea name="updatekomen" class=" rounded-lg resize-none px-5 py-3  focus:outline-sky-600 my-2">{{ $reply->konten }}</textarea>
+                                                                        <div class="flex flex-row gap-4">
+                                                                            <button type="submit"
+                                                                                class="bg-sky-600 text-white px-6 py-2 rounded-lg">Simpan</button>
+                                                                            <a @click="open = false"
+                                                                                class="cursor-pointer bg-sky-900 text-white px-6 py-2 rounded-lg">Batal</a>
+                                                                        </div>
+                                                                    </span>
+                                                                </form>
+                                                            </div>
+                                                            <form action="{{ url('comment/' . $reply->id) }}"
+                                                                method="post">
+                                                                @csrf
+                                                                @method('DELETE')
+                                                                <button type="submit" class="text-red-500">
+                                                                    hapus
+                                                                </button>
+                                                            </form>
+                                                        </div>
+                                                    @else
+                                                        <div x-data="{ open: false }">
+                                                            <button @click="open = true">Balas</button>
+                                                            <form action="{{ route('reply.show', ['id' => $reply->id]) }}"
+                                                                method="post">
+                                                                @csrf
+                                                                <span x-show="open" x-trap="open"
+                                                                    class="flex flex-col">
+                                                                    <textarea name="reply" class="rounded-lg resize-none px-5 py-3 focus:outline-sky-600 my-2"></textarea>
+                                                                    <div class="flex flex-row gap-4">
+                                                                        <button type="submit"
+                                                                            class="bg-sky-600 text-white px-6 py-2 rounded-lg">Simpan</button>
+                                                                        <a @click="open = false"
+                                                                            class="cursor-pointer bg-sky-900 text-white px-6 py-2 rounded-lg">Batal</a>
+                                                                    </div>
+                                                                </span>
+                                                            </form>
+                                                        </div>
+                                                    @endif
+                                                    @if ($reply->replies->count() > 0)
+                                                        <div class="pl-4 my-2">
+                                                            @foreach ($reply->replies as $subReply)
+                                                                <div class="flex justify-between">
+                                                                    <button
+                                                                        class="text-[14px]">{{ $subReply->user->name }} >
+                                                                        {{ $reply->user->name }}</button>
+                                                                </div>
+                                                                <p>{{ $subReply->konten }}</p>
+                                                                <hr class="border-1 border-sky-800/60 my-3">
+                                                            @endforeach
+                                                        </div>
+                                                    @endif
+                                                @endforeach
+
+                                            </div>
+                                        </div>
+                                    @endif
+                                </div>
+                            @endif
+                        </div>
+                    @endforeach
+                </div>
+            @endif
 
 
-        {{-- <div x-data="{ open: false }">
+            {{-- <div x-data="{ open: false }">
             <button @click="open = true">Open Dialog</button>
 
             <span x-show="open" x-trap="open">
@@ -70,20 +259,20 @@
                 <button @click="open = false">Close Dialog</button>
             </span>
         </div> --}}
-        <!-- Alpine Plugins -->
-        <script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/focus@3.x.x/dist/cdn.min.js"></script>
+            <!-- Alpine Plugins -->
+            <script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/focus@3.x.x/dist/cdn.min.js"></script>
 
-        <!-- Alpine Core -->
-        <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-        <script>
-            import Alpine from 'alpinejs'
-            import focus from '@alpinejs/focus'
+            <!-- Alpine Core -->
+            <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+            <script>
+                import Alpine from 'alpinejs'
+                import focus from '@alpinejs/focus'
 
-            Alpine.plugin(focus)
-        </script>
-    </div>
-@endsection
-{{-- <!DOCTYPE html>
+                Alpine.plugin(focus)
+            </script>
+        </div>
+    @endsection
+    {{-- <!DOCTYPE html>
 <html lang="en">
 
 <head>

@@ -63,7 +63,7 @@ class PostController extends Controller
         Post::create($data);
        
 
-        return redirect()->to('post');
+        return redirect()->to('post')->with('success',"berhasil ditambah");
     }
 
     /**
@@ -81,7 +81,7 @@ class PostController extends Controller
     {
         $category = Category::get();
         $data = Post::where('id',$id)->first();
-        return view('Posts.edit', ['data' => $data,'category' => $category]);
+        return view('Posts.edit', ['data' => $data,'category' => $category])->with('success','berhasil diedit');
     }
 
     /**
@@ -89,19 +89,10 @@ class PostController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $request->validate([
-            "title"=>'required',
-            "content"=>'required',
-            "category_id"=>'required',
-           
-        ],[
-            'title.required'=> "title wajib diisi",
-            'content.required'=> "content wajib diisi",
-            'category_id.required'=> "category wajib diisi",
-        ]);
+       
         $data = [
             "title"=>$request->title,
-            "content" => $request->content,
+            "content" => trim($request->content),
             "category_id"=>$request->category_id,
         ];
         if($request->hasFile('foto')){
@@ -119,7 +110,7 @@ class PostController extends Controller
         }
 
        Post::where('id',$id)->update($data);
-  return redirect()->to('post');
+  return redirect()->to('post')->with('success','berhasil diedit');
     }
 
     /**
@@ -130,6 +121,6 @@ class PostController extends Controller
         $data = Post::where('id',$id)->first();
         File::delete(public_path('foto/'.$data->foto));
         Post::where('id',$id)->delete();
-        return redirect()->to('post');
+        return redirect()->to('post')->with('success','berhasil dihapus');
     }
 }

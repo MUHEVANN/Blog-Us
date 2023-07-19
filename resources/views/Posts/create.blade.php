@@ -17,8 +17,6 @@
                         @foreach ($data as $item)
                             <option value="{{ $item->id }}">{{ $item->name }}</option>
                         @endforeach
-                        <option value="1">One</option>
-
                     </select>
                 </div>
                 <div class="mb-3">

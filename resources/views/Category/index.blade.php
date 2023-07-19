@@ -1,19 +1,14 @@
 @extends('layout.main')
 @section('content')
-    <table class="table table-sm">
-        <caption>List of users</caption>
-        <thead>
-            <tr>
-                <th>no</th>
-            </tr>
-        </thead>
-        <tbody>
-            ...
-        </tbody>
-    </table>
+    {{-- @if (session('success'))
+        <div class="alert alert-success">
+            {{ session('success') }}
+        </div>
+    @endif --}}
+
     <h1>halaman post content</h1>
 
-    {{-- <table class="table w-full">
+    <table class="table w-full">
         <!-- head -->
         <thead class="">
             <tr>
@@ -26,42 +21,56 @@
         <tbody>
             <!-- row 1 -->
             @foreach ($data as $item)
-                <tr class="">
+                <tr class="text-capitalize">
                     <td>{{ $loop->iteration }}</td>
                     <td>{{ $item->name }}
                     </td>
 
 
                     <td>
-                        <div class="flex gap-x-1">
+                        <div class="d-flex align-items-center">
 
                             <a class="bg-blue-100 hover:bg-blue-200 p-3 "
-                                href="{{ url('category/' . $item->id . '/edit') }}"><svg xmlns="http://www.w3.org/2000/svg"
-                                    fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
-                                    class="w-6 h-6">
-                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                        d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
-                                </svg>
+                                href="{{ url('category/' . $item->id . '/edit') }}">Edit
                             </a>
 
-                           
+                            <button type="button" class="btn btn-primary" data-id="{{ $item->id }}" data-bs-toggle="modal"
+                                data-bs-target="#staticBackdrop{{ $item->id }}">
+                                Hapus
+                            </button>
+                            <div class="modal fade" id="staticBackdrop{{ $item->id }}" data-bs-backdrop="static"
+                                data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel"
+                                aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h1 class="modal-title fs-5" id="staticBackdropLabel"></h1>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            Apakah yakin ingin dihapus?{{ $item->id }}
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary"
+                                                data-bs-dismiss="modal">Close</button>
 
-                            <form action="{{ url('category/' . $item->id) }}" method="POST">
-                                @csrf
-                                @method('DELETE')
-                                <button class="bg-red-100 hover:bg-red-200 p-3" type="submit"><svg
-                                        xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                        stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                            d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
-                                    </svg>
-                                </button>
-                            </form>
+                                            <form action="{{ url('category/' . $item->id) }}" method="POST">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button class="btn btn-primary" type="submit">Hapus
+                                                </button>
+                                            </form>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </td>
 
                 </tr>
             @endforeach
         </tbody>
-    </table> --}}
+    </table>
 @endsection
